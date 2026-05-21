@@ -6,9 +6,9 @@ val NortonYellow = Color(0xFFFEEC2A)
 val NortonBlack = Color(0xFF000000)
 val NortonWhite = Color(0xFFFFFFFF)
 
-val SafeGreen = Color(0x544CAF50)
-val WarningOrange = Color(0x66FF9800)
-val CriticalRed = Color(0x54F44336)
+val SafeGreen = Color(0x404CAF50)
+val WarningOrange = Color(0x54FF9800)
+val CriticalRed = Color(0x33F44336)
 
 /*
 val NortonYellow = Color(0xFFFEEC2A)

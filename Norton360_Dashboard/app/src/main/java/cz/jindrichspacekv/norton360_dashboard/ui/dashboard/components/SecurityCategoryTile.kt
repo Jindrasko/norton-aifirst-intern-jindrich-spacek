@@ -25,9 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cz.jindrichspacekv.norton360_dashboard.data.SecurityCategory
 import cz.jindrichspacekv.norton360_dashboard.data.SecurityStatus
 import cz.jindrichspacekv.norton360_dashboard.ui.theme.CriticalRed
@@ -40,14 +42,17 @@ fun SecurityCategoryTile(
     isIdle: Boolean,
     modifier: Modifier = Modifier
 ) {
+    // Ensure background is opaque to prevent shadow bleeding into the card
     val backgroundColor = if (isIdle) {
         Color.White
     } else {
-        when (category.status) {
+        val statusColor = when (category.status) {
             SecurityStatus.SAFE -> SafeGreen
             SecurityStatus.WARNING -> WarningOrange
             SecurityStatus.CRITICAL -> CriticalRed
         }
+        // Blend the semi-transparent status color over White to get an opaque color
+        statusColor.compositeOver(Color.White)
     }
 
     val icon: ImageVector = when (category.id) {
@@ -61,11 +66,11 @@ fun SecurityCategoryTile(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp) // Fixed height for equal-size cards
-            .padding(4.dp),
+            .height(100.dp) // Increased height to fit 2 lines of description
+            .padding(6.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(
             modifier = Modifier
@@ -88,12 +93,15 @@ fun SecurityCategoryTile(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = category.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (category.description.isNotEmpty()) {
+                    Text(
+                        text = category.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 14.sp
+                    )
+                }
             }
         }
     }

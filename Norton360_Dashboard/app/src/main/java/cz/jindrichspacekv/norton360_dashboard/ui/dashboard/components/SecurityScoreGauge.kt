@@ -56,7 +56,7 @@ fun SecurityScoreGauge(
         contentAlignment = Alignment.Center
     ) {
         val diameter = min(maxWidth, maxHeight)
-        val strokeWidth = 12.dp
+        val strokeWidth = 20.dp
 
         val infiniteTransition = rememberInfiniteTransition(label = "Rotation")
         val rotation by infiniteTransition.animateFloat(
@@ -88,7 +88,7 @@ fun SecurityScoreGauge(
         ) {
             // Background Track
             drawCircle(
-                color = Color.LightGray.copy(alpha = 0.3f),
+                color = Color.LightGray.copy(alpha = 0.45f),
                 style = Stroke(width = strokeWidth.toPx())
             )
 
@@ -109,21 +109,22 @@ fun SecurityScoreGauge(
         }
 
         // Inner Circular Button
-        val buttonSize = diameter - strokeWidth * 2
+        val buttonSize = diameter - strokeWidth * 2 + 6.dp
         val isScanning = uiState is SecurityUiState.Scanning
         
         val buttonColor by animateColorAsState(
             targetValue = when (uiState) {
                 is SecurityUiState.Idle -> MaterialTheme.colorScheme.primary
                 is SecurityUiState.Scanning -> MaterialTheme.colorScheme.primary
-                is SecurityUiState.Completed -> {
+                is SecurityUiState.Completed -> MaterialTheme.colorScheme.background
+                /*    {
                     val score = uiState.summary.overallScore
                     when {
                         score >= 80 -> SafeGreen
                         score >= 60 -> WarningOrange
                         else -> CriticalRed
                     }
-                }
+                }  */
             },
             label = "ButtonColor"
         )
@@ -132,16 +133,15 @@ fun SecurityScoreGauge(
             onClick = onScanClick,
             enabled = !isScanning,
             modifier = Modifier
-                .size(buttonSize)
-                .alpha(if (isScanning) 0.33f else 1f),
+                .size(buttonSize),
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(
                 containerColor = buttonColor,
                 contentColor = Color.Black,
-                disabledContainerColor = buttonColor,
+                disabledContainerColor = MaterialTheme.colorScheme.background,
                 disabledContentColor = Color.Black
             ),
-            border = BorderStroke(4.dp, Color.Black),
+            border = BorderStroke(6.dp, Color.Black.copy(alpha = if (uiState is SecurityUiState.Idle) 1f else 0f)),
             contentPadding = PaddingValues(0.dp)
         ) {
             Column(
@@ -151,43 +151,44 @@ fun SecurityScoreGauge(
                 when (uiState) {
                     is SecurityUiState.Idle -> {
                         Text(
-                            text = "Scan Now",
-                            fontSize = 20.sp,
+                            text = "Start Scan",
+                            fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Last scan 13 days ago",
+                            text = "Last scan 1 day ago",
                             fontSize = 12.sp,
-                            textAlign = TextAlign.Center
+                            fontWeight = FontWeight.Medium,
+                            color = Color.DarkGray
                         )
                     }
                     is SecurityUiState.Scanning -> {
                         Text(
                             text = "Scanning...",
-                            fontSize = 18.sp,
+                            fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = "${uiState.progress}%",
-                            fontSize = 24.sp,
+                            fontSize = 48.sp,
                             fontWeight = FontWeight.ExtraBold
                         )
                     }
                     is SecurityUiState.Completed -> {
                         Text(
                             text = animatedScore.value.toInt().toString(),
-                            fontSize = 40.sp,
+                            fontSize = 48.sp,
                             fontWeight = FontWeight.ExtraBold
                         )
                         Text(
                             text = "Overall Score",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Scan again",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
+                            text = "(Scan again)",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium,
                             modifier = Modifier.padding(top = 8.dp)
                         )
                     }
