@@ -12,7 +12,7 @@ This project is an implementation of the **Security Health Dashboard (Option A)*
 ## Setup Instructions
 To build and run the project locally:
 1.  **Clone the repository**: `git clone https://github.com/Jindrasko/norton-aifirst-intern-jindrich-spacek.git`
-2.  **Open in Android Studio**: Use the latest version of Android Studio (Ladybug or newer recommended).
+2.  **Open folder "Norton360_dashboard" in Android Studio**: Use the latest version of Android Studio (Ladybug or newer recommended).
 3.  **Sync Gradle**: Allow the project to download dependencies (Hilt, Compose Material 3, Turbine, etc.).
 4.  **Run the App**: Select a device/emulator (API 29+) and click the **Run** button.
 5.  **Run Tests**: Execute `./gradlew test` or run the tests in `app/src/test` via the IDE to verify logic.
