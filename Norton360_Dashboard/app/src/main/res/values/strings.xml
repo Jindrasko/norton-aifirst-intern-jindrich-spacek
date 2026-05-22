@@ -1,3 +1,21 @@
 <resources>
-    <string name="app_name">Norton360_dashboard</string>
+    <string name="app_name">Norton 360 Dashboard</string>
+    <string name="scan_now">Scan Now</string>
+    <string name="start_scan">Start Scan</string>
+    <string name="scanning">Scanning…</string>
+    <string name="overall_score">Overall Score</string>
+    <string name="scan_again">Scan again</string>
+    <string name="last_scan_format">Last scan %1$d days ago</string>
+    <string name="error_scan_failed">Scan failed. Please try again.</string>
+    <string name="retry">Retry</string>
+    <string name="os_version_title">OS Version</string>
+    <string name="app_threats_title">App Threats</string>
+    <string name="wifi_safety_title">Wi-Fi Safety</string>
+    <string name="password_strength_title">Password Strength</string>
+    <string name="checking">Checking…</string>
+    <string name="norton_logo_desc">Norton Logo</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_menu">Menu</string>
+    <string name="nav_alerts">Alerts</string>
+    <string name="nav_account">Account</string>
 </resources>

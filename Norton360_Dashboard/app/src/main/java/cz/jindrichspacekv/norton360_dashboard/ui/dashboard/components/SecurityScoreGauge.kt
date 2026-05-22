@@ -13,7 +13,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,14 +32,13 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
-import cz.jindrichspacekv.norton360_dashboard.ui.theme.CriticalRed
-import cz.jindrichspacekv.norton360_dashboard.ui.theme.SafeGreen
-import cz.jindrichspacekv.norton360_dashboard.ui.theme.WarningOrange
+import cz.jindrichspacekv.norton360_dashboard.R
 import cz.jindrichspacekv.norton360_dashboard.viewmodel.SecurityUiState
 
 @Composable
@@ -96,13 +94,14 @@ fun SecurityScoreGauge(
                 is SecurityUiState.Idle -> 0f
                 is SecurityUiState.Scanning -> (uiState.progress / 100f) * 360f
                 is SecurityUiState.Completed -> (animatedScore.value / 100f) * 360f
+                else -> 0f
             }
 
             // Progress / Spinning Arc
             drawArc(
-                color = if (uiState is SecurityUiState.Scanning) Color(0xFFFEEC2A) else Color(0xFFFEEC2A),
+                color = Color(0xFFFEEC2A),
                 startAngle = -90f,
-                sweepAngle = if (uiState is SecurityUiState.Scanning) 90f else sweepAngle.coerceAtLeast(0.1f),
+                sweepAngle = sweepAngle,
                 useCenter = false,
                 style = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
             )
@@ -117,14 +116,7 @@ fun SecurityScoreGauge(
                 is SecurityUiState.Idle -> MaterialTheme.colorScheme.primary
                 is SecurityUiState.Scanning -> MaterialTheme.colorScheme.primary
                 is SecurityUiState.Completed -> MaterialTheme.colorScheme.background
-                /*    {
-                    val score = uiState.summary.overallScore
-                    when {
-                        score >= 80 -> SafeGreen
-                        score >= 60 -> WarningOrange
-                        else -> CriticalRed
-                    }
-                }  */
+                else -> MaterialTheme.colorScheme.primary
             },
             label = "ButtonColor"
         )
@@ -151,12 +143,12 @@ fun SecurityScoreGauge(
                 when (uiState) {
                     is SecurityUiState.Idle -> {
                         Text(
-                            text = "Start Scan",
+                            text = stringResource(R.string.start_scan),
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Last scan 1 day ago",
+                            text = stringResource(R.string.last_scan_format, 1),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color.DarkGray
@@ -164,7 +156,7 @@ fun SecurityScoreGauge(
                     }
                     is SecurityUiState.Scanning -> {
                         Text(
-                            text = "Scanning...",
+                            text = stringResource(R.string.scanning),
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -181,17 +173,18 @@ fun SecurityScoreGauge(
                             fontWeight = FontWeight.ExtraBold
                         )
                         Text(
-                            text = "Overall Score",
+                            text = stringResource(R.string.overall_score),
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "(Scan again)",
+                            text = stringResource(R.string.scan_again),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier.padding(top = 8.dp)
                         )
                     }
+                    else -> {}
                 }
             }
         }

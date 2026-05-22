@@ -42,8 +42,12 @@ sealed class ScanState {
     /**
      * Scan is currently in progress.
      * @property progress Current progress percentage (0-100).
+     * @property partialCategories List of categories completed so far.
      */
-    data class Scanning(val progress: Int) : ScanState()
+    data class Scanning(
+        val progress: Int,
+        val partialCategories: List<SecurityCategory> = emptyList()
+    ) : ScanState()
 
     /**
      * Scan has finished successfully.

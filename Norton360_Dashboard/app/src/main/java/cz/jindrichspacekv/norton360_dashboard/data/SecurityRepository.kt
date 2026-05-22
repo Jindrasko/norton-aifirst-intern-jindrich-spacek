@@ -23,51 +23,57 @@ interface SecurityRepository {
 class MockSecurityRepositoryImpl @Inject constructor() : SecurityRepository {
 
     override fun performSecurityScan(): Flow<ScanState> = flow {
-        // Simulate scan progress updates
-        emit(ScanState.Scanning(0))
+        val allCategories = listOf(
+            SecurityCategory(
+                id = "os_version",
+                title = "OS Version",
+                description = "Up to date",
+                status = SecurityStatus.SAFE
+            ),
+            SecurityCategory(
+                id = "app_threats",
+                title = "App Threats",
+                description = "No malicious apps found",
+                status = SecurityStatus.SAFE
+            ),
+            SecurityCategory(
+                id = "wifi_safety",
+                title = "Wi-Fi Safety",
+                description = "Unsecured network detected",
+                status = SecurityStatus.WARNING
+            ),
+            SecurityCategory(
+                id = "password_strength",
+                title = "Password Strength",
+                description = "2 compromised passwords",
+                status = SecurityStatus.CRITICAL
+            )
+        )
+
+        // Simulate scan progress updates with partial results
+        emit(ScanState.Scanning(0, emptyList()))
         delay(500)
         
-        emit(ScanState.Scanning(20))
-        delay(600)
-        
-        emit(ScanState.Scanning(50))
+        emit(ScanState.Scanning(25, allCategories.take(1)))
+        delay(1800)
+        emit(ScanState.Scanning(40, allCategories.take(1) ))
         delay(800)
-        
-        emit(ScanState.Scanning(80))
-        delay(500)
-        
-        emit(ScanState.Scanning(100))
+
+        emit(ScanState.Scanning(50, allCategories.take(2)))
+        delay(800)
+        emit(ScanState.Scanning(63, allCategories.take(2) ))
+        delay(600)
+        emit(ScanState.Scanning(75, allCategories.take(3)))
+        delay(1400)
+        emit(ScanState.Scanning(92, allCategories.take(3) ))
+        delay(800)
+        emit(ScanState.Scanning(100, allCategories))
         delay(300)
 
-        // Mock data as per requirements
+        // Final Completed state
         val mockSummary = SecurityHealthSummary(
             overallScore = 75,
-            categories = listOf(
-                SecurityCategory(
-                    id = "os_version",
-                    title = "OS Version",
-                    description = "Up to date",
-                    status = SecurityStatus.SAFE
-                ),
-                SecurityCategory(
-                    id = "app_threats",
-                    title = "App Threats",
-                    description = "No malicious apps found",
-                    status = SecurityStatus.SAFE
-                ),
-                SecurityCategory(
-                    id = "wifi_safety",
-                    title = "Wi-Fi Safety",
-                    description = "Unsecured network detected",
-                    status = SecurityStatus.WARNING
-                ),
-                SecurityCategory(
-                    id = "password_strength",
-                    title = "Password Strength",
-                    description = "2 compromised passwords",
-                    status = SecurityStatus.CRITICAL
-                )
-            )
+            categories = allCategories
         )
 
         emit(ScanState.Completed(mockSummary))

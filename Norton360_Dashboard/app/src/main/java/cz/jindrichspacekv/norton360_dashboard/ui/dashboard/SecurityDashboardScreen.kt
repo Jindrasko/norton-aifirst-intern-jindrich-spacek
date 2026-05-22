@@ -1,6 +1,7 @@
 package cz.jindrichspacekv.norton360_dashboard.ui.dashboard
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,8 +20,10 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -38,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -77,10 +81,10 @@ fun SecurityDashboardScreen(
 
     var selectedItem by remember { mutableIntStateOf(0) }
     val navItems = listOf(
-        NavItem("Home", Icons.Default.Home),
-        NavItem("Menu", Icons.Default.Menu),
-        NavItem("Alerts", Icons.Default.Notifications, hasBadge = true),
-        NavItem("Account", Icons.Default.AccountCircle, hasBadge = true)
+        NavItem(stringResource(R.string.nav_home), Icons.Default.Home),
+        NavItem(stringResource(R.string.nav_menu), Icons.Default.Menu),
+        NavItem(stringResource(R.string.nav_alerts), Icons.Default.Notifications, hasBadge = true),
+        NavItem(stringResource(R.string.nav_account), Icons.Default.AccountCircle, hasBadge = true)
     )
 
     Scaffold(
@@ -90,7 +94,7 @@ fun SecurityDashboardScreen(
                 navigationIcon = {
                     Image(
                         painter = painterResource(id = R.drawable.norton),
-                        contentDescription = "Norton Logo",
+                        contentDescription = stringResource(R.string.norton_logo_desc),
                         modifier = Modifier
                             .padding(start = 16.dp)
                             .size(128.dp)
@@ -151,6 +155,7 @@ fun SecurityDashboardScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .background(Color(0xFFF9F9FF)) // Light lavender background
         ) {
             // Gauge Area
             Box(
@@ -160,15 +165,35 @@ fun SecurityDashboardScreen(
                     .padding(horizontal = 24.dp, vertical = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                SecurityScoreGauge(
-                    uiState = uiState,
-                    onScanClick = onScanClick
-                )
+                if (uiState is SecurityUiState.Error) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = uiState.message ?: stringResource(R.string.error_scan_failed),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        Button(onClick = onScanClick) {
+                            Text(stringResource(R.string.retry))
+                        }
+                    }
+                } else {
+                    SecurityScoreGauge(
+                        uiState = uiState,
+                        onScanClick = onScanClick
+                    )
+                }
             }
 
             // Category Grid Area
             val categories = when (uiState) {
                 is SecurityUiState.Completed -> uiState.summary.categories
+                is SecurityUiState.Scanning -> {
+                    // Merge idle categories with partial results from scan
+                    idleCategories.map { idle ->
+                        uiState.partialCategories.find { it.id == idle.id } ?: idle
+                    }
+                }
                 else -> idleCategories
             }
 
@@ -178,9 +203,14 @@ fun SecurityDashboardScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(categories) { category ->
+                    val isCategoryCompleted = when (uiState) {
+                        is SecurityUiState.Completed -> true
+                        is SecurityUiState.Scanning -> uiState.partialCategories.any { it.id == category.id }
+                        else -> false
+                    }
                     SecurityCategoryTile(
                         category = category,
-                        isIdle = uiState is SecurityUiState.Idle || uiState is SecurityUiState.Scanning
+                        isIdle = !isCategoryCompleted
                     )
                 }
             }
