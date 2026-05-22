@@ -125,3 +125,7 @@ G) Testing
 ### What would I do differently?
 - **Theme Centralization**: I initially hardcoded some brand colors in local Composables; next time, I would strictly define all brand tokens in `Theme.kt` first to avoid search-and-replace later.
 - **Comprehensive Initial Prompt**: I would specify from the very beginning that the agent should implement error handling, use string resources, and strictly use defined colors instead of introducing new hex colors. I would also use AI agent rules to specify these practices upfront.
+
+
+
+Video Demo: https://drive.google.com/file/d/149LQYb8kiWIRKOMtRYTG7Yq5Q54NhUep/view?usp=sharing 
